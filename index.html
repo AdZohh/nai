@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Para Nai 🌹</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Architects+Daughter&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100vh;overflow-x:hidden;font-family:'DM Sans',sans-serif;background:#1a0a0e}
+
+#bg{position:fixed;inset:0;z-index:0;background:url('background.jpg') center/cover no-repeat}
+#bg::after{content:'';position:absolute;inset:0;background:rgba(0,0,0,.54);backdrop-filter:blur(2px)}
+
+.fp{position:fixed;pointer-events:none;z-index:100;left:0;top:0}
+
+/* ── GIFT ── */
+#gphase{position:relative;z-index:10;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1rem;animation:fadeIn .9s ease both}
+#gphase.out{animation:giftOut .85s ease forwards;pointer-events:none}
+#gwrap{display:inline-block;position:relative;cursor:pointer;animation:giftFloat 2.2s ease-in-out infinite}
+#gwrap:hover #gbox{transform:scale(1.08)}
+#gglow{position:absolute;inset:0;border-radius:9999px;background:rgba(251,113,133,.22);filter:blur(48px);pointer-events:none;animation:pulseGlow 2s ease-in-out infinite}
+#gbox{position:relative;background:linear-gradient(135deg,#be123c,#991b1b);padding:clamp(2.5rem,7vw,3.5rem);border-radius:1.5rem;box-shadow:0 0 60px rgba(180,30,60,.7);border:4px solid rgba(255,255,255,.8);transition:transform .3s}
+.rv{position:absolute;top:0;left:50%;transform:translateX(-50%);height:100%;width:1rem;background:rgba(255,255,255,.22)}
+.rh{position:absolute;top:50%;left:0;transform:translateY(-50%);width:100%;height:1rem;background:rgba(255,255,255,.22)}
+#glabel{margin-top:2.5rem;text-align:center;font-size:1.5rem;font-family:'Architects Daughter',cursive;color:#fecdd3;font-weight:bold;text-shadow:0 3px 15px rgba(0,0,0,.9)}
+
+/* ── VIDEO BAR — fixed top ── */
+#vbar{
+  position:fixed;top:0;left:0;right:0;z-index:30;
+  display:none;                          /* shown by JS after gift opens */
+  justify-content:center;align-items:center;
+  padding:.5rem 1rem;
+  background:rgba(0,0,0,.3);
+  backdrop-filter:blur(6px);
+}
+#vinner{
+  width:100%;max-width:42rem;
+  border-radius:1rem;overflow:hidden;
+  box-shadow:0 0 40px rgba(139,26,42,.55);
+  border:2px solid rgba(255,255,255,.18);
+  background:#000;                       /* black while loading */
+}
+#vid{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}
+
+/* ── LETTER ── */
+#lphase{position:relative;z-index:10;min-height:100vh;display:none;flex-direction:column;align-items:center}
+#lphase.on{display:flex;animation:slideUp 1.2s ease both}
+#vspacer{width:100%;flex-shrink:0}
+
+#lcontent{width:100%;max-width:42rem;margin:0 auto;padding:2rem 1rem 6rem;display:flex;flex-direction:column;gap:2.5rem}
+
+.lhdr{text-align:center;display:flex;flex-direction:column;gap:.75rem}
+.lhdr h1{font-size:clamp(2.5rem,8vw,4.5rem);font-family:'Playfair Display',serif;color:#fff;text-shadow:0 5px 25px rgba(0,0,0,1)}
+
+.card{background:rgba(0,0,0,.60);backdrop-filter:blur(24px);border-radius:2rem;padding:clamp(1.75rem,5vw,3rem);border:1px solid rgba(255,255,255,.15);box-shadow:0 25px 50px rgba(0,0,0,.5);color:#fff;font-size:1.1rem;line-height:1.85;display:flex;flex-direction:column;gap:1.5rem}
+.card2{background:rgba(0,0,0,.52)}
+.card p{text-shadow:0 2px 12px rgba(0,0,0,1)}
+.acc{color:#fda4af;font-style:italic;font-weight:500}
+.acc2{color:#ffe4e6;font-weight:500}
+
+.xbtn{background:none;border:none;cursor:pointer;font-family:'Architects Daughter',cursive;color:#fda4af;text-shadow:0 4px 18px rgba(0,0,0,1);transition:transform .2s;text-align:left;padding:0;line-height:1.7}
+.xbtn:hover{transform:scale(1.03)}
+.xsub{font-size:.95rem;color:rgba(255,255,255,.6);font-family:'DM Sans',sans-serif}
+
+.fbwrap{display:flex;justify-content:center}
+.fbtn{font-size:1.7rem;padding:1rem 2.5rem;border-radius:9999px;background:linear-gradient(135deg,#be123c,#991b1b);color:#fff;border:1px solid rgba(255,255,255,.2);cursor:pointer;transition:transform .3s;animation:btnPulse 2s ease-in-out infinite}
+.fbtn:hover{transform:translateY(-4px)}
+
+/* ── MODAL ── */
+#modal{display:none;position:fixed;inset:0;z-index:200;align-items:center;justify-content:center;background:rgba(0,0,0,.72);backdrop-filter:blur(20px);padding:1rem}
+#modal.on{display:flex;animation:fadeIn .3s ease both}
+#mcard{text-align:center;position:relative;background:rgba(0,0,0,.65);backdrop-filter:blur(32px);padding:3rem;border-radius:3rem;box-shadow:0 25px 60px rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.2);max-width:28rem;width:100%;animation:modalIn .4s cubic-bezier(.34,1.56,.64,1) both}
+.mheart{position:absolute;top:-1.75rem;left:50%;transform:translateX(-50%);background:#fee2e2;padding:1rem;border-radius:9999px;box-shadow:0 4px 20px rgba(0,0,0,.3);animation:heartBeat 1.2s ease-in-out infinite}
+#mcard h2{font-family:'Playfair Display',serif;font-size:clamp(1.5rem,5vw,2.2rem);font-weight:bold;color:#fff;text-shadow:0 5px 20px rgba(0,0,0,1);line-height:1.35;margin-top:1.25rem;margin-bottom:1.5rem}
+#mcard h2 span{font-family:'Architects Daughter',cursive;font-size:clamp(1.1rem,3.5vw,1.5rem);color:#fda4af;font-weight:normal}
+.mhint{color:rgba(255,255,255,.5);font-size:.85rem}
+
+/* ── MUSIC BTN ── */
+#mbtn{display:none;position:fixed;bottom:1rem;right:1rem;z-index:50;padding:.75rem;border-radius:9999px;border:none;cursor:pointer;background:rgba(255,255,255,.85);backdrop-filter:blur(8px);color:#e11d48;box-shadow:0 4px 14px rgba(0,0,0,.25);transition:background .2s}
+#mbtn:hover{background:#fff}
+
+/* letter fade-in delays */
+#lphase.on .d1{animation:fadeIn .9s ease .3s  both}
+#lphase.on .d2{animation:fadeIn 1s   ease .55s both}
+#lphase.on .d3{animation:fadeIn 1s   ease .85s both}
+#lphase.on .d4{animation:fadeIn 1s   ease 1.2s both}
+
+/* ── KEYFRAMES ── */
+@keyframes fadeIn  {from{opacity:0}to{opacity:1}}
+@keyframes slideUp {from{opacity:0;transform:translateY(80px)}to{opacity:1;transform:translateY(0)}}
+@keyframes giftOut {to{opacity:0;transform:scale(.8);filter:blur(20px)}}
+@keyframes modalIn {from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+@keyframes giftFloat{0%,100%{transform:translateY(0) rotate(0deg) scale(1)}33%{transform:translateY(-18px) rotate(4deg) scale(1.08)}66%{transform:translateY(-10px) rotate(-4deg) scale(1.04)}}
+@keyframes pulseGlow{0%,100%{opacity:.22;transform:scale(1.5)}50%{opacity:.38;transform:scale(1.65)}}
+@keyframes heartBeat{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.15)}}
+@keyframes btnPulse{0%,100%{box-shadow:0 0 30px rgba(139,26,42,.6)}50%{box-shadow:0 0 55px rgba(190,18,60,.9)}}
+</style>
+</head>
+<body>
+
+<div id="bg"></div>
+
+<!-- VIDEO BAR (fixed top) -->
+<div id="vbar">
+  <div id="vinner">
+    <!-- src set dynamically by JS after user gesture -->
+    <video id="vid" loop playsinline muted></video>
+  </div>
+</div>
+
+<!-- GIFT -->
+<div id="gphase">
+  <div id="gwrap">
+    <div id="gglow"></div>
+    <div id="gbox">
+      <svg width="100" height="100" viewBox="0 0 24 24" fill="white"
+           style="filter:drop-shadow(0 4px 8px rgba(0,0,0,.4))">
+        <path d="M20 12v10H4V12"/><path d="M22 7H2v5h20V7z"/>
+        <path d="M12 22V7"/>
+        <path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7z"/>
+        <path d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/>
+      </svg>
+      <div class="rv"></div><div class="rh"></div>
+    </div>
+    <p id="glabel">Toca para abrir 🌹</p>
+  </div>
+</div>
+
+<!-- LETTER -->
+<div id="lphase">
+  <div id="vspacer"></div>
+  <div id="lcontent">
+
+    <div class="lhdr d1">
+      <h1>Hola Nai</h1>
+      <button class="xbtn" id="bhdr" style="font-size:1.1rem">
+        siento mucho como te hice sentir con lo que viste 🌹
+      </button>
+    </div>
+
+    <div class="card d2">
+      <p>No voy a empezar esto intentando que suene bonito. Voy a empezar siendo sincero contigo.</p>
+      <p>Entiendo perfectamente por qué te hizo sentir mal lo que viste. Si yo estuviera en tu lugar y encontrara cosas así, probablemente también tendría dudas. No voy a minimizarlo ni a decirte que estás exagerando.</p>
+      <p>La verdad es que muchas de esas cosas son de una etapa de mi vida que existió y que no voy a fingir que nunca pasó. Estuvieron ahí porque en algún momento sentí algo por alguien, y tampoco voy a mentirte sobre eso.</p>
+      <p class="acc">Pero también hay algo que necesito que sepas: que existan esas cosas no significa que yo siga viviendo ahí.</p>
+      <p>Cuando empecé a hablar contigo, jamás pensé que llegarías a importarme de la manera en que lo haces hoy. Conocerte fue cambiando muchas cosas en mí. Cada salida, cada conversación, cada momento compartido hizo que dejara de mirar hacia atrás y empezara a prestarle atención a lo que tenía enfrente.</p>
+      <p class="acc2">Y hoy, lo que tengo enfrente eres tú.</p>
+      <p>Por eso me dolió leerte decir que ya no sabes si quieres seguir hablando conmigo. No porque me sienta con derecho a que te quedes, sino porque realmente me importas y porque me habría gustado que siguieras conociendo la persona que soy ahora, no solo la que fui.</p>
+    </div>
+
+    <div class="card card2 d3">
+      <p>No te voy a pedir que ignores lo que viste. Tampoco que confíes en mí de inmediato. Entiendo que las dudas aparezcan.</p>
+      <p>Solo quiero que tengas claro que no estoy aquí porque esté buscando reemplazar a nadie, ni porque siga atrapado en algo del pasado. Estoy aquí porque me gusta hablar contigo, porque disfruto verte, porque me gusta cómo me siento cuando comparto tiempo contigo y porque sí quiero seguir conociéndote.</p>
+      <p>Si decides tomar distancia, voy a respetarlo. Pero si decides quedarte, me gustaría que me juzgaras por lo que hago contigo de ahora en adelante, no por recuerdos que quedaron guardados de una etapa que ya terminó.</p>
+      <button class="xbtn" id="bltr" style="font-size:1.15rem">
+        Eso era todo lo que quería decirte. 🌹<br>
+        <span class="xsub">— Porque prefiero ser honesto contigo, incluso cuando las cosas son incómodas.</span>
+      </button>
+    </div>
+
+    <div class="fbwrap d4">
+      <button class="fbtn" id="bfinal">🌹</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL -->
+<div id="modal">
+  <div id="mcard">
+    <div class="mheart">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="#be123c">
+        <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+      </svg>
+    </div>
+    <h2>Tu sonrisa es la más linda<br><span>que he visto nunca.</span></h2>
+    <p class="mhint">(Toca fuera para cerrar)</p>
+  </div>
+</div>
+
+<!-- MUSIC BUTTON -->
+<button id="mbtn" title="Música">
+  <svg id="micon" width="20" height="20" fill="none" stroke="currentColor"
+       stroke-width="2" viewBox="0 0 24 24">
+    <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+    <path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/>
+  </svg>
+</button>
+
+<script>
+/* ── FLOWERS ─────────────────────────────────────────────── */
+var WINE=['#8B1A2A','#A0293A','#6B0F1A','#C0392B','#922B3E','#7B1224','#B03040'];
+
+function flowerSVG(c,s){
+  var p='';
+  [0,72,144,216,288].forEach(function(d){
+    p+='<ellipse cx="20" cy="7" rx="5" ry="8" fill="'+c+'" opacity=".92" transform="rotate('+d+' 20 20)"/>';
+  });
+  return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">'+p
+        +'<circle cx="20" cy="20" r="6" fill="#FFD166"/><circle cx="20" cy="20" r="3.5" fill="#FFF0A0"/></svg>';
+}
+
+function spawnFlower(mode){
+  try{
+    var el=document.createElement('div');
+    el.className='fp';
+    var c=WINE[Math.floor(Math.random()*WINE.length)];
+    var s=Math.round(mode==='burst'?18+Math.random()*16:14+Math.random()*14);
+    el.innerHTML=flowerSVG(c,s);
+    var W=window.innerWidth,H=window.innerHeight;
+    var sx,sy,ex,ey;
+    if(mode==='burst'){
+      sx=W*.5;sy=H*.45;
+      var a=Math.random()*Math.PI*2,d=180+Math.random()*440;
+      ex=sx+Math.cos(a)*d;ey=sy+Math.sin(a)*d;
+    }else{sx=-60;sy=Math.random()*H;ex=W+80;ey=sy+(Math.random()-.5)*220;}
+    document.body.appendChild(el);
+    var dur=mode==='burst'?1800+Math.random()*1800:6000+Math.random()*12000;
+    var delay=mode==='burst'?Math.random()*600:Math.random()*3000;
+    var rot=(Math.random()-.5)*540;
+    var sc=mode==='burst'?.7+Math.random()*1.3:.4+Math.random()*1.4;
+    if(typeof el.animate!=='function'){
+      setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},dur+delay);return;
+    }
+    var an=el.animate([
+      {transform:'translate('+sx+'px,'+sy+'px) rotate(0deg) scale('+(0.4*sc)+')',opacity:0},
+      {transform:'translate('+(sx+(ex-sx)*.1)+'px,'+(sy+(ey-sy)*.1)+'px) rotate('+(rot*.1)+'deg) scale('+sc+')',opacity:1,offset:.1},
+      {transform:'translate('+ex+'px,'+ey+'px) rotate('+rot+'deg) scale('+(sc*.9)+')',opacity:0}
+    ],{duration:dur,delay:delay,fill:'forwards',easing:'ease-out'});
+    an.onfinish=function(){if(el.parentNode)el.parentNode.removeChild(el);};
+  }catch(e){}
+}
+
+function burst(n){for(var i=0;i<n;i++)spawnFlower('burst');}
+
+var ambT=null;
+function startAmbient(){
+  if(ambT)return;
+  spawnFlower('float');spawnFlower('float');
+  ambT=setInterval(function(){spawnFlower('float');},700);
+}
+
+/* ── MUSIC ───────────────────────────────────────────────── */
+var music=null,muted=false;
+var ICON_ON ='<path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/>';
+var ICON_OFF='<path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>';
+
+document.getElementById('mbtn').addEventListener('click',function(){
+  muted=!muted;
+  document.getElementById('micon').innerHTML=muted?ICON_OFF:ICON_ON;
+  if(muted){if(music)music.pause();}
+  else if(music){music.play().catch(function(){});}
+});
+
+/* ── VIDEO ───────────────────────────────────────────────── */
+var vid=document.getElementById('vid');
+
+function startVideo(){
+  // Assign src dynamically AFTER user gesture — most reliable way across browsers
+  vid.src='video.mp4';
+  vid.muted=true;
+  vid.load();
+  vid.addEventListener('canplay',function onCan(){
+    vid.removeEventListener('canplay',onCan);
+    vid.play().catch(function(){});
+  });
+  // Fallback: try after 1.5s regardless
+  setTimeout(function(){
+    if(vid.paused){vid.play().catch(function(){});}
+  },1500);
+  // Keep alive — re-play if it ever pauses
+  setInterval(function(){
+    if(vid.src&&vid.paused&&!vid.ended){vid.play().catch(function(){});}
+  },2000);
+}
+
+/* ── SPACER ──────────────────────────────────────────────── */
+function fixSpacer(){
+  var h=document.getElementById('vbar').offsetHeight;
+  document.getElementById('vspacer').style.height=h+'px';
+}
+
+/* ── OPEN GIFT ───────────────────────────────────────────── */
+var opened=false;
+
+document.getElementById('gwrap').addEventListener('click',function(){
+  if(opened)return; opened=true;
+
+  // Chime
+  try{var ch=new Audio('chime.mp3');ch.volume=.5;ch.play().catch(function(){});}catch(e){}
+
+  // Music
+  try{
+    music=new Audio('music.mp3');
+    music.loop=true;music.volume=.4;
+    music.play().catch(function(){});
+  }catch(e){}
+
+  burst(90);
+
+  var gp=document.getElementById('gphase');
+  gp.classList.add('out');
+
+  setTimeout(function(){
+    gp.style.display='none';
+
+    // Show video bar then start video
+    var vbar=document.getElementById('vbar');
+    vbar.style.display='flex';
+    startVideo();
+
+    // Spacer: wait one frame after display:flex so offsetHeight is real
+    requestAnimationFrame(function(){
+      requestAnimationFrame(fixSpacer);
+    });
+    window.addEventListener('resize',fixSpacer);
+
+    // Show letter
+    document.getElementById('lphase').classList.add('on');
+    startAmbient();
+    document.getElementById('mbtn').style.display='block';
+  },900);
+});
+
+/* ── BURST BUTTONS ───────────────────────────────────────── */
+document.getElementById('bhdr').addEventListener('click',function(){burst(50);});
+document.getElementById('bltr').addEventListener('click',function(){burst(50);});
+
+/* ── FINAL MODAL ─────────────────────────────────────────── */
+document.getElementById('bfinal').addEventListener('click',function(){
+  burst(70);
+  document.getElementById('modal').classList.add('on');
+});
+document.getElementById('modal').addEventListener('click',function(e){
+  if(e.target===this)this.classList.remove('on');
+});
+</script>
+</body>
+</html>
