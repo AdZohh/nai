@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Para Nai 🌹</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Architects+Daughter&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['"Playfair Display"', 'serif'],
+            handwriting: ['"Architects Daughter"', 'cursive'],
+            body: ['"DM Sans"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: #1a1a1a; }
+
+    .flower-particle { position: fixed; pointer-events: none; z-index: 100; }
+
+    @keyframes gift-float {
+      0%,100% { transform: translateY(0) rotate(0deg) scale(1); }
+      33%      { transform: translateY(-18px) rotate(4deg) scale(1.08); }
+      66%      { transform: translateY(-10px) rotate(-4deg) scale(1.04); }
+    }
+    .gift-animate { animation: gift-float 2.2s ease-in-out infinite; }
+
+    @keyframes pulse-glow {
+      0%,100% { opacity: .25; transform: scale(1.5); }
+      50%      { opacity: .4;  transform: scale(1.65); }
+    }
+    .pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+
+    @keyframes heart-beat {
+      0%,100% { transform: translateX(-50%) scale(1); }
+      50%      { transform: translateX(-50%) scale(1.15); }
+    }
+    .heart-beat { animation: heart-beat 1.2s ease-in-out infinite; }
+
+    @keyframes btn-pulse {
+      0%,100% { box-shadow: 0 0 30px rgba(139,26,42,.6); }
+      50%      { box-shadow: 0 0 50px rgba(190,18,60,.85); }
+    }
+    .btn-pulse { animation: btn-pulse 2s ease-in-out infinite; }
+
+    @keyframes fade-in  { from { opacity:0 } to { opacity:1 } }
+    @keyframes slide-up { from { opacity:0; transform:translateY(80px) } to { opacity:1; transform:translateY(0) } }
+    @keyframes gift-exit{ to   { opacity:0; transform:scale(.8); filter:blur(20px) } }
+    @keyframes modal-in { from { opacity:0; transform:scale(.7) } to { opacity:1; transform:scale(1) } }
+
+    .anim-fade-in   { animation: fade-in  1s   ease          both; }
+    .anim-slide-up  { animation: slide-up 1.2s ease          both; }
+    .anim-gift-exit { animation: gift-exit 0.85s ease        forwards; }
+    .anim-modal-in  { animation: modal-in .4s cubic-bezier(.34,1.56,.64,1) both; }
+
+    .d1 { animation-delay: .4s }
+    .d2 { animation-delay: .65s }
+    .d3 { animation-delay: .95s }
+    .d4 { animation-delay: 1.35s }
+
+    .volume-btn {
+      position: fixed; bottom: 1rem; right: 1rem; z-index: 50;
+      padding: .75rem; border-radius: 9999px; border: none; cursor: pointer;
+      background: rgba(255,255,255,.85); backdrop-filter: blur(8px);
+      color: #e11d48; box-shadow: 0 4px 14px rgba(0,0,0,.25);
+      transition: background .2s;
+    }
+    .volume-btn:hover { background: #fff; }
+
+    .card {
+      background: rgba(0,0,0,.60);
+      backdrop-filter: blur(24px);
+      border-radius: 2rem;
+      padding: clamp(1.75rem,5vw,3rem);
+      border: 1px solid rgba(255,255,255,.15);
+      box-shadow: 0 25px 50px rgba(0,0,0,.5);
+      color: #fff;
+      font-size: 1.125rem;
+      line-height: 1.85;
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+    }
+    .card2 { background: rgba(0,0,0,.55); }
+
+    p { text-shadow: 0 2px 12px rgba(0,0,0,1); }
+
+    .letter-wrap {
+      width: 100%; max-width: 42rem; margin: 0 auto;
+      padding: 0 1rem 6rem;
+      display: flex; flex-direction: column; gap: 2.5rem;
+      margin-top: 2rem;
+    }
+
+    .burst-btn {
+      background: none; border: none; cursor: pointer; text-align: left; padding: 0;
+      font-size: 1.2rem; font-family: 'Architects Daughter', cursive;
+      color: #fda4af; text-shadow: 0 4px 18px rgba(0,0,0,1);
+      line-height: 1.65; transition: transform .2s;
+    }
+    .burst-btn:hover { transform: scale(1.02); }
+
+    .sub-btn {
+      background: none; border: none; cursor: pointer;
+      font-size: 1.15rem; font-family: 'Architects Daughter', cursive;
+      color: #fda4af; text-shadow: 0 4px 15px rgba(0,0,0,1);
+      transition: transform .2s;
+    }
+    .sub-btn:hover { transform: scale(1.1); }
+
+    .final-btn {
+      font-size: 1.6rem; padding: 1rem 2.2rem;
+      border-radius: 9999px; font-weight: bold;
+      background: linear-gradient(135deg,#be123c,#991b1b);
+      color: #fff; border: 1px solid rgba(255,255,255,.2);
+      cursor: pointer; transition: transform .3s;
+    }
+    .final-btn:hover { transform: translateY(-4px); }
+
+    .overlay {
+      position: fixed; inset: 0; pointer-events: none;
+      background: rgba(0,0,0,.55); backdrop-filter: blur(2px); z-index: 0;
+    }
+    .modal-backdrop {
+      position: fixed; inset: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,.72); backdrop-filter: blur(20px);
+      padding: 1rem; animation: fade-in .3s ease both;
+    }
+    .modal-card {
+      text-align: center; position: relative;
+      background: rgba(0,0,0,.62); backdrop-filter: blur(32px);
+      padding: 3rem; border-radius: 3rem;
+      box-shadow: 0 25px 60px rgba(0,0,0,.6);
+      border: 1px solid rgba(255,255,255,.2);
+      max-width: 28rem; width: 100%;
+    }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<script type="text/babel">
+const { useState, useRef, useEffect, useCallback } = React;
+
+/* ─── FLOWER ENGINE ─────────────────────────────────────────── */
+const WINE = ['#8B1A2A','#A0293A','#6B0F1A','#C0392B','#922B3E','#7B1224','#B03040'];
+
+function mkFlowerSVG(color, size) {
+  return `<svg width="${size}" height="${size}" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="20" cy="7" rx="5" ry="8" fill="${color}" opacity=".92" transform="rotate(0 20 20)"/>
+    <ellipse cx="20" cy="7" rx="5" ry="8" fill="${color}" opacity=".92" transform="rotate(72 20 20)"/>
+    <ellipse cx="20" cy="7" rx="5" ry="8" fill="${color}" opacity=".92" transform="rotate(144 20 20)"/>
+    <ellipse cx="20" cy="7" rx="5" ry="8" fill="${color}" opacity=".92" transform="rotate(216 20 20)"/>
+    <ellipse cx="20" cy="7" rx="5" ry="8" fill="${color}" opacity=".92" transform="rotate(288 20 20)"/>
+    <circle cx="20" cy="20" r="6" fill="#FFD166"/>
+    <circle cx="20" cy="20" r="3.5" fill="#FFF0A0"/>
+  </svg>`;
+}
+
+function spawnFlower(mode) {
+  const el = document.createElement('div');
+  el.className = 'flower-particle';
+  const color = WINE[Math.floor(Math.random() * WINE.length)];
+  const size  = mode === 'burst' ? 18 + Math.random() * 16 : 14 + Math.random() * 14;
+  el.innerHTML = mkFlowerSVG(color, size);
+
+  const W = window.innerWidth, H = window.innerHeight;
+  let sx, sy, ex, ey;
+
+  if (mode === 'burst') {
+    sx = W * .5; sy = H * .45;
+    const ang = Math.random() * 2 * Math.PI;
+    const d   = 180 + Math.random() * 440;
+    ex = sx + Math.cos(ang) * d;
+    ey = sy + Math.sin(ang) * d;
+  } else {
+    sx = -60; sy = Math.random() * H;
+    ex = W + 80; ey = sy + (Math.random() - .5) * 220;
+  }
+
+  el.style.cssText = 'left:0;top:0';
+  document.body.appendChild(el);
+
+  const dur   = mode === 'burst' ? 1800 + Math.random()*1800 : 6000 + Math.random()*12000;
+  const delay = mode === 'burst' ? Math.random()*600          : Math.random()*3000;
+  const rot   = (Math.random() - .5) * 540;
+  const sc    = mode === 'burst' ? .7 + Math.random()*1.3 : .4 + Math.random()*1.4;
+
+  const anim = el.animate([
+    { transform:`translate(${sx}px,${sy}px) rotate(0deg) scale(${.4*sc})`, opacity:0 },
+    { transform:`translate(${sx+(ex-sx)*.1}px,${sy+(ey-sy)*.1}px) rotate(${rot*.1}deg) scale(${sc})`, opacity:1, offset:.1 },
+    { transform:`translate(${ex}px,${ey}px) rotate(${rot}deg) scale(${sc*.9})`, opacity:0 },
+  ], { duration:dur, delay, fill:'forwards', easing:'ease-out' });
+
+  anim.onfinish = () => el.remove();
+}
+
+function spawnSwarm(mode, count) {
+  for (let i = 0; i < count; i++) spawnFlower(mode);
+}
+
+function useAmbientFlowers(active) {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (active) {
+      spawnFlower('float'); spawnFlower('float'); spawnFlower('float');
+      ref.current = setInterval(() => spawnFlower('float'), 650);
+    } else {
+      clearInterval(ref.current);
+    }
+    return () => clearInterval(ref.current);
+  }, [active]);
+}
+
+/* ─── STICKY VIDEO ──────────────────────────────────────────── */
+function StickyVideo() {
+  const vRef = useRef(null);
+  useEffect(() => {
+    const v = vRef.current;
+    if (!v) return;
+    v.play().catch(() => {});
+    const iv = setInterval(() => { if (v.paused) v.play().catch(()=>{}); }, 800);
+    return () => clearInterval(iv);
+  }, []);
+
+  return (
+    <div style={{
+      position:'sticky', top:0, zIndex:20,
+      width:'100%', display:'flex', justifyContent:'center',
+      padding:'.5rem 1rem',
+      background:'rgba(0,0,0,.22)', backdropFilter:'blur(4px)',
+    }}>
+      <div style={{
+        width:'100%', maxWidth:'42rem', borderRadius:'1rem', overflow:'hidden',
+        boxShadow:'0 0 40px rgba(139,26,42,.5)',
+        border:'2px solid rgba(255,255,255,.2)',
+      }}>
+        <video
+          ref={vRef}
+          src="video.webm"
+          autoPlay loop playsInline
+          muted={false}
+          style={{ width:'100%', aspectRatio:'16/9', objectFit:'cover', display:'block' }}
+          onPause={e => e.target.play().catch(()=>{})}
+        />
+      </div>
+    </div>
+  );
+}
+
+/* ─── AUDIO PLAYER ──────────────────────────────────────────── */
+function AudioPlayer({ isPlaying }) {
+  const aRef  = useRef(null);
+  const [muted, setMuted] = useState(false);
+
+  useEffect(() => {
+    if (!aRef.current) {
+      aRef.current = new Audio('music.mp3');
+      aRef.current.loop = true;
+      aRef.current.volume = .4;
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!aRef.current) return;
+    if (isPlaying && !muted) aRef.current.play().catch(()=>{});
+    else aRef.current.pause();
+  }, [isPlaying, muted]);
+
+  if (!isPlaying) return null;
+
+  return (
+    <button className="volume-btn" onClick={() => setMuted(m => !m)} title={muted ? 'Activar música' : 'Silenciar música'}>
+      {muted
+        ? <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+        : <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>
+      }
+    </button>
+  );
+}
+
+/* ─── GIFT ICON ─────────────────────────────────────────────── */
+const GiftIcon = () => (
+  <svg width="100" height="100" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"
+       style={{filter:'drop-shadow(0 4px 8px rgba(0,0,0,.4))'}}>
+    <path d="M20 12v10H4V12"/><path d="M22 7H2v5h20V7z"/>
+    <path d="M12 22V7"/>
+    <path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7z"/>
+    <path d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/>
+  </svg>
+);
+
+const HeartIcon = () => (
+  <svg width="40" height="40" viewBox="0 0 24 24" fill="#be123c" xmlns="http://www.w3.org/2000/svg">
+    <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+  </svg>
+);
+
+/* ─── APP ───────────────────────────────────────────────────── */
+function App() {
+  const [phase, setPhase] = useState('gift'); // gift | exiting | letter
+  const [showFinal, setShowFinal] = useState(false);
+  const chimeRef = useRef(null);
+
+  useAmbientFlowers(phase === 'letter');
+
+  const burst = useCallback(() => spawnSwarm('burst', 55), []);
+
+  const openGift = () => {
+    if (phase !== 'gift') return;
+    if (!chimeRef.current) {
+      chimeRef.current = new Audio('chime.mp3');
+      chimeRef.current.volume = .5;
+    }
+    chimeRef.current.play().catch(()=>{});
+    spawnSwarm('burst', 90);
+    setPhase('exiting');
+    setTimeout(() => setPhase('letter'), 900);
+  };
+
+  const openFinal = () => { setShowFinal(true); burst(); };
+
+  return (
+    <div style={{
+      minHeight:'100vh',
+      backgroundImage:"url('background.jpg')",
+      backgroundSize:'cover', backgroundPosition:'center', backgroundRepeat:'no-repeat',
+      position:'relative', overflowX:'hidden',
+    }}>
+      <AudioPlayer isPlaying={phase === 'letter'} />
+      <div className="overlay" />
+
+      {/* ── GIFT ── */}
+      {(phase === 'gift' || phase === 'exiting') && (
+        <div
+          className={phase === 'exiting' ? 'anim-gift-exit' : 'anim-fade-in'}
+          style={{
+            height:'100vh', display:'flex', flexDirection:'column',
+            alignItems:'center', justifyContent:'center',
+            padding:'1rem', position:'relative', zIndex:10,
+          }}
+        >
+          <div className="gift-animate" onClick={openGift} style={{cursor:'pointer',position:'relative',display:'inline-block'}}>
+            <div className="pulse-glow" style={{position:'absolute',inset:0,background:'rgba(251,113,133,.25)',borderRadius:'9999px',filter:'blur(48px)',pointerEvents:'none'}} />
+            <div style={{
+              position:'relative',
+              background:'linear-gradient(135deg,#be123c,#991b1b)',
+              padding:'3.5rem', borderRadius:'1.5rem',
+              boxShadow:'0 0 60px rgba(180,30,60,.7)',
+              border:'4px solid rgba(255,255,255,.8)',
+              transition:'transform .3s',
+            }}>
+              <GiftIcon />
+              <div style={{position:'absolute',top:0,left:'50%',transform:'translateX(-50%)',height:'100%',width:'1rem',background:'rgba(255,255,255,.25)'}} />
+              <div style={{position:'absolute',top:'50%',left:0,transform:'translateY(-50%)',width:'100%',height:'1rem',background:'rgba(255,255,255,.25)'}} />
+            </div>
+            <p style={{
+              marginTop:'2.5rem', textAlign:'center',
+              fontSize:'1.5rem', fontFamily:'"Architects Daughter",cursive',
+              color:'#fecdd3', fontWeight:'bold',
+              textShadow:'0 3px 15px rgba(0,0,0,.9)',
+            }}>Toca para abrir 🌹</p>
+          </div>
+        </div>
+      )}
+
+      {/* ── LETTER ── */}
+      {phase === 'letter' && (
+        <div className="anim-slide-up" style={{minHeight:'100vh',display:'flex',flexDirection:'column',alignItems:'center',position:'relative',zIndex:10}}>
+          <StickyVideo />
+
+          <div className="letter-wrap">
+
+            {/* Header */}
+            <div className="anim-fade-in d1" style={{textAlign:'center',display:'flex',flexDirection:'column',gap:'.75rem'}}>
+              <h1 style={{
+                fontSize:'clamp(2.5rem,8vw,4.5rem)',
+                fontFamily:'"Playfair Display",serif',
+                color:'#fff', textShadow:'0 5px 25px rgba(0,0,0,1)',
+              }}>Hola Nai</h1>
+              <button className="sub-btn" onClick={burst}>
+                siento mucho como te hice sentir con lo que viste 🌹
+              </button>
+            </div>
+
+            {/* Card 1 */}
+            <div className="card anim-fade-in d2">
+              <p>No voy a empezar esto intentando que suene bonito. Voy a empezar siendo sincero contigo.</p>
+              <p>Entiendo perfectamente por qué te hizo sentir mal lo que viste. Si yo estuviera en tu lugar y encontrara cosas así, probablemente también tendría dudas. No voy a minimizarlo ni a decirte que estás exagerando.</p>
+              <p>La verdad es que muchas de esas cosas son de una etapa de mi vida que existió y que no voy a fingir que nunca pasó. Estuvieron ahí porque en algún momento sentí algo por alguien, y tampoco voy a mentirte sobre eso.</p>
+              <p style={{color:'#fda4af',fontStyle:'italic',fontWeight:500}}>Pero también hay algo que necesito que sepas: que existan esas cosas no significa que yo siga viviendo ahí.</p>
+              <p>Cuando empecé a hablar contigo, jamás pensé que llegarías a importarme de la manera en que lo haces hoy. Conocerte fue cambiando muchas cosas en mí. Cada salida, cada conversación, cada momento compartido hizo que dejara de mirar hacia atrás y empezara a prestarle atención a lo que tenía enfrente.</p>
+              <p style={{color:'#ffe4e6',fontWeight:500}}>Y hoy, lo que tengo enfrente eres tú.</p>
+              <p>Por eso me dolió leerte decir que ya no sabes si quieres seguir hablando conmigo. No porque me sienta con derecho a que te quedes, sino porque realmente me importas y porque me habría gustado que siguieras conociendo la persona que soy ahora, no solo la que fui.</p>
+            </div>
+
+            {/* Card 2 */}
+            <div className="card card2 anim-fade-in d3">
+              <p>No te voy a pedir que ignores lo que viste. Tampoco que confíes en mí de inmediato. Entiendo que las dudas aparezcan.</p>
+              <p>Solo quiero que tengas claro que no estoy aquí porque esté buscando reemplazar a nadie, ni porque siga atrapado en algo del pasado. Estoy aquí porque me gusta hablar contigo, porque disfruto verte, porque me gusta cómo me siento cuando comparto tiempo contigo y porque sí quiero seguir conociéndote.</p>
+              <p>Si decides tomar distancia, voy a respetarlo. Pero si decides quedarte, me gustaría que me juzgaras por lo que hago contigo de ahora en adelante, no por recuerdos que quedaron guardados de una etapa que ya terminó.</p>
+              <button className="burst-btn" onClick={burst}>
+                Eso era todo lo que quería decirte. 🌹<br/>
+                <span style={{fontSize:'1rem',color:'rgba(255,255,255,.65)'}}>— Porque prefiero ser honesto contigo, incluso cuando las cosas son incómodas.</span>
+              </button>
+            </div>
+
+            {/* Final button */}
+            <div className="anim-fade-in d4" style={{display:'flex',justifyContent:'center',paddingBottom:'1rem'}}>
+              <button className="final-btn btn-pulse" onClick={openFinal}>🌹</button>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* ── FINAL MODAL ── */}
+      {showFinal && (
+        <div className="modal-backdrop" onClick={() => setShowFinal(false)}>
+          <div className="modal-card anim-modal-in" onClick={e => e.stopPropagation()}>
+            <div className="heart-beat" style={{position:'absolute',top:'-1.75rem',left:'50%',background:'#fee2e2',padding:'1rem',borderRadius:'9999px',boxShadow:'0 4px 20px rgba(0,0,0,.3)'}}>
+              <HeartIcon />
+            </div>
+            <h2 style={{
+              fontFamily:'"Playfair Display",serif',
+              fontSize:'clamp(1.6rem,5.5vw,2.4rem)',
+              fontWeight:'bold', color:'#fff',
+              textShadow:'0 5px 20px rgba(0,0,0,1)',
+              lineHeight:1.35, marginTop:'1.25rem', marginBottom:'1.5rem',
+            }}>
+              Tienes la sonrisa más hermosa<br/>
+              <span style={{
+                fontFamily:'"Architects Daughter",cursive',
+                fontSize:'clamp(1.15rem,4vw,1.6rem)',
+                color:'#fda4af', fontWeight:'normal',
+              }}>que he visto nunca.</span>
+            </h2>
+            <p style={{color:'rgba(255,255,255,.55)',fontSize:'.875rem'}}>
+              (Toca fuera para cerrar)
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
